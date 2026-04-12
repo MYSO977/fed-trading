@@ -1,0 +1,11 @@
+best_params:
+  ma_fast: 5
+  ma_slow: 20
+  vol_threshold: 1.2
+  min_confidence: 0.6
+  atr_mult_sl: 2.0
+  atr_mult_tp: 3.0
+metrics:
+  total_return: "待回测生成"
+  sharpe: 0
+  max_drawdown: "0%"
