@@ -8,24 +8,36 @@ from src.backtester import Backtester
 import pandas as pd, numpy as np, logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-def generate_mock_ohlcv(n=500):
-    """生成带趋势/震荡/突破的逼真 OHLCV 数据（回测用）"""
+def generate_mock_ohlcv(n=800):
+    """生成带清晰趋势/震荡/突破的 OHLCV 数据"""
     np.random.seed(42)
-    rets = np.random.normal(0.0003, 0.015, n)
-    rets[100:150] += 0.002  # 趋势段
-    rets[300:350] -= 0.003  # 下跌段
-    prices = 100 * np.exp(np.cumsum(rets))
+    rets = np.zeros(n)
+    # 阶段1: 震荡 (0-200)
+    rets[:200] = np.random.normal(0, 0.008, 200)
+    # 阶段2: 上升主升浪 (200-400)
+    rets[200:400] = np.random.normal(0.0015, 0.01, 200)
+    # 阶段3: 高位震荡 (400-550)
+    rets[400:550] = np.random.normal(0, 0.006, 150)
+    # 阶段4: 下跌趋势 (550-700)
+    rets[550:700] = np.random.normal(-0.002, 0.012, 150)
+    # 阶段5: 筑底反弹 (700-800)
+    rets[700:] = np.random.normal(0.001, 0.009, 100)
+    
+    prices = 150 * np.exp(np.cumsum(rets))
     df = pd.DataFrame({"close": prices})
-    df["high"] = df["close"] * (1 + np.abs(np.random.normal(0, 0.008, n)))
-    df["low"] = df["close"] * (1 - np.abs(np.random.normal(0, 0.008, n)))
-    df["volume"] = np.random.lognormal(15, 1.2, n) * (1 + np.abs(rets)*30)
+    df["high"] = df["close"] * (1 + np.abs(np.random.normal(0, 0.005, n)))
+    df["low"] = df["close"] * (1 - np.abs(np.random.normal(0, 0.005, n)))
+    # 趋势段放量
+    vol_base = np.random.lognormal(14, 1.0, n)
+    vol_base[200:400] *= 1.8; vol_base[550:700] *= 1.6
+    df["volume"] = vol_base * (1 + np.abs(rets)*20)
     return df
 
 def grid_search(df):
     param_grid = [
-        {"ma_fast": 5, "ma_slow": 20, "vol_threshold": 1.2, "min_confidence": 0.6},
-        {"ma_fast": 8, "ma_slow": 21, "vol_threshold": 1.5, "min_confidence": 0.5},
-        {"ma_fast": 3, "ma_slow": 15, "vol_threshold": 1.0, "min_confidence": 0.7},
+        {"ma_fast": 5, "ma_slow": 20, "roc_period": 10, "vol_threshold": 1.2, "min_confidence": 0.6},
+        {"ma_fast": 8, "ma_slow": 21, "roc_period": 14, "vol_threshold": 1.5, "min_confidence": 0.5},
+        {"ma_fast": 3, "ma_slow": 15, "roc_period": 7, "vol_threshold": 1.0, "min_confidence": 0.7},
     ]
     results = []
     bt = Backtester(commission=0.0005, slippage=0.001, initial_capital=100000)
