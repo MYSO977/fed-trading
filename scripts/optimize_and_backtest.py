@@ -8,29 +8,35 @@ from src.backtester import Backtester
 import pandas as pd, numpy as np, logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-def generate_mock_ohlcv(n=800):
-    """生成带清晰趋势/震荡/突破的 OHLCV 数据"""
+def generate_mock_ohlcv(n=500):
+    """生成带清晰市场结构的稳健版 OHLCV 数据（比例切片，永不越界）"""
     np.random.seed(42)
     rets = np.zeros(n)
-    # 阶段1: 震荡 (0-200)
-    rets[:200] = np.random.normal(0, 0.008, 200)
-    # 阶段2: 上升主升浪 (200-400)
-    rets[200:400] = np.random.normal(0.0015, 0.01, 200)
-    # 阶段3: 高位震荡 (400-550)
-    rets[400:550] = np.random.normal(0, 0.006, 150)
-    # 阶段4: 下跌趋势 (550-700)
-    rets[550:700] = np.random.normal(-0.002, 0.012, 150)
-    # 阶段5: 筑底反弹 (700-800)
-    rets[700:] = np.random.normal(0.001, 0.009, 100)
+    
+    # 用比例定义阶段，自动适配任意 n
+    seg = n // 5  # 每段约 20%
+    
+    # 阶段 1: 震荡筑底 (0-20%)
+    rets[0:seg] = np.random.normal(0, 0.008, seg)
+    # 阶段 2: 主升浪 (20-40%)
+    rets[seg:2*seg] = np.random.normal(0.0015, 0.01, seg)
+    # 阶段 3: 高位震荡 (40-60%)
+    rets[2*seg:3*seg] = np.random.normal(0, 0.006, seg)
+    # 阶段 4: 下跌趋势 (60-80%)
+    rets[3*seg:4*seg] = np.random.normal(-0.002, 0.012, seg)
+    # 阶段 5: 筑底反弹 (80-100%)
+    rets[4*seg:] = np.random.normal(0.001, 0.009, n - 4*seg)
     
     prices = 150 * np.exp(np.cumsum(rets))
     df = pd.DataFrame({"close": prices})
     df["high"] = df["close"] * (1 + np.abs(np.random.normal(0, 0.005, n)))
     df["low"] = df["close"] * (1 - np.abs(np.random.normal(0, 0.005, n)))
-    # 趋势段放量
-    vol_base = np.random.lognormal(14, 1.0, n)
-    vol_base[200:400] *= 1.8; vol_base[550:700] *= 1.6
-    df["volume"] = vol_base * (1 + np.abs(rets)*20)
+    
+    # 趋势段放量 (阶段 2 和 4)
+    vol = np.random.lognormal(14, 1.0, n)
+    vol[seg:2*seg] *= 1.8   # 主升浪放量
+    vol[3*seg:4*seg] *= 1.6 # 下跌放量
+    df["volume"] = vol * (1 + np.abs(rets)*20)
     return df
 
 def grid_search(df):
