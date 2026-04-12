@@ -1,6 +1,7 @@
 best_params:
   ma_fast: 5
   ma_slow: 20
+  roc_period: 10
   vol_threshold: 1.2
   min_confidence: 0.6
   atr_mult_sl: 2.0
