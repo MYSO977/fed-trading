@@ -1,3 +1,4 @@
+import sys,os; sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import logging
 from src.data_loader import load_real_market_data
 logging.basicConfig(level=logging.INFO)

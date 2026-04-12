@@ -1,0 +1,20 @@
+{
+  "metrics": {
+    "total_return": "0.00%",
+    "sharpe": 0,
+    "max_drawdown": "0.00%",
+    "win_rate": "0.0%",
+    "final_equity": "100000",
+    "trade_count": 0
+  },
+  "params": {
+    "ma_fast": 5.0,
+    "ma_slow": 20.0,
+    "roc_period": 10.0,
+    "vol_threshold": 1.2,
+    "min_confidence": 0.6,
+    "atr_mult_sl": 2.0,
+    "atr_mult_tp": 3.0
+  },
+  "trade_count": 124
+}

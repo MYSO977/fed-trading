@@ -31,7 +31,7 @@ class ReportGenerator:
     
     def _plot_equity(s, equity, bench_ann, path, symbol):
         eq = pd.Series(equity)
-        dates = pd.date_range(end=datetime.now(), periods=len(eq), freq="1H")
+        dates = pd.date_range(end=datetime.now(), periods=len(eq), freq="h")
         bench = [100000 * (1 + bench_ann/252/6)**i for i in range(len(eq))]
         plt.figure(figsize=(10,5))
         plt.plot(dates, eq, label=symbol+" Equity", linewidth=2)

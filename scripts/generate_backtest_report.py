@@ -48,8 +48,18 @@ def run_backtest(params):
 
 if __name__ == "__main__":
     logging.info("🚀 启动回测报告生成...")
-    cfg = yaml.safe_load(open("config/strategy_params.yaml"))
-    params = cfg.get("best_params", {"ma_fast":5,"ma_slow":20,"roc_period":10,"vol_threshold":1.2,"min_confidence":0.6})
+    # 健壮加载配置（处理 numpy 标量等边缘情况）
+    try:
+        import yaml
+        with open("config/strategy_params.yaml") as f:
+            cfg = yaml.safe_load(f) or {}
+        params = cfg.get("best_params", {})
+        # 确保参数是纯 Python 类型
+        params = {k: float(v) if isinstance(v, (int, float, str)) else v for k, v in 
+                  ({"ma_fast":5,"ma_slow":20,"roc_period":10,"vol_threshold":1.2,"min_confidence":0.6} | params).items()}
+    except Exception as e:
+        print(f"⚠️ 配置加载失败: {e}，使用默认参数")
+        params = {"ma_fast":5,"ma_slow":20,"roc_period":10,"vol_threshold":1.2,"min_confidence":0.6}
     equity, trades, metrics = run_backtest(params)
     reporter = ReportGenerator()
     path = reporter.generate(equity, trades, params, metrics, "FED_TRADING")

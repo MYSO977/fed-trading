@@ -4,12 +4,16 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 class StrategyEngine:
     """多因子信号引擎：趋势 + 动量 + 波动率 + 成交量确认"""
     def __init__(self, params=None):
-        self.p = params or {
+        defaults = {
             "ma_fast": 5, "ma_slow": 20, "roc_period": 10,
             "vol_threshold": 1.2, "atr_mult_sl": 2.0, "atr_mult_tp": 3.0,
             "min_confidence": 0.6
         }
-    
+        self.p = {**defaults, **(params or {})}
+        # 🔹 关键修复：确保 rolling 窗口参数为整数（pandas 要求）
+        for k in ["ma_fast", "ma_slow", "roc_period"]:
+            if k in self.p:
+                self.p[k] = int(self.p[k])  # 合并而非覆盖
     def compute_features(self, df):
         """向量化计算特征（回测用）"""
         df = df.copy()

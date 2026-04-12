@@ -1,3 +1,4 @@
+import sys,os; sys.path.insert(0,os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import logging, os
 logging.basicConfig(level=logging.INFO)
 def aggregate_global(nodes=[".11",".143"], output_dir="./loras"):
