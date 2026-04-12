@@ -24,3 +24,8 @@ config/telegram.yaml
 .vscode/
 .idea/
 *.swp
+# Build artifacts & nested clones
+fed-trading/
+reports/*.png
+reports/*.csv
+reports/*.json
