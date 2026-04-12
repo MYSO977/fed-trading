@@ -1,4 +1,4 @@
-import logging, re
+import logging
 logging.basicConfig(level=logging.INFO)
 def predict(prompt):
     if not prompt: return {"action":"HOLD","confidence":0.0}

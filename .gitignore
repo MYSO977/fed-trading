@@ -1,19 +1,26 @@
-venv/
+# Python
 __pycache__/
-*.pyc
-*.egg-info/
-dist/
-build/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
 
-# 模型与权重（通过 scp 同步，不入库）
+# Project
+*.log
+logs/
 loras/
-models/
-*.safetensors
-*.bin
+weights/
 *.pt
+*.bin
 
-# 系统与 IDE
-.DS_Store
+# Secrets
+config/telegram.yaml
+*.env
+*.key
+
+# IDE
 .vscode/
 .idea/
 *.swp

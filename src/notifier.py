@@ -1,7 +1,6 @@
 import logging,os,yaml,asyncio
 from datetime import datetime
-try:
-    from telegram import Bot; _HAS_TG=True
+try: from telegram import Bot; _HAS_TG=True
 except ImportError: _HAS_TG=False
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 class Notifier:
