@@ -177,7 +177,7 @@ class StrategyEngine:
         # 均线
         df["MA_Fast"]  = df["close"].rolling(self.p["ma_fast"]).mean()
         df["MA_Slow"]  = df["close"].rolling(self.p["ma_slow"]).mean()
-        df["MA_200"]   = df["close"].rolling(self.p["ma_200"]).mean()
+        df["MA_200"] = df["close"].rolling(min(self.p["ma_200"], len(df))).mean()
         df["EMA_9"]    = self._ema(df["close"], self.p["ema_9"])
         df["EMA_21"]   = self._ema(df["close"], self.p["ema_21"])
         # 动量
@@ -200,7 +200,7 @@ class StrategyEngine:
         # 经典策略
         signals = self._classic_strategies(df)
         df = pd.concat([df, signals], axis=1)
-        return df.dropna()
+        return df.dropna(subset=["MA_Fast","MA_Slow","RSI","MACD","BB_Upper","VWAP","ATR"])
 
     # ── 实时推理接口 ──────────────────────────────────────
     def get_signal(self, row):
