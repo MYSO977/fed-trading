@@ -3,16 +3,16 @@
 
 # ============ 网络配置（三台统一） ============
 master:
-  ip: "192.168.0.18"
+  ip: "192.168.0.143"
   port: 22
   user: "heng"
   lora_sync_path: "/home/heng/fed-trading/loras"
 
 # ============ 本机配置（每台修改） ============
 node:
-  id: "acer"              # ← .18 固定为 acer
-  ip: "192.168.0.18"      # ← .18 的固定IP
-  role: "aggregator"      # acer 是聚合主机
+  id: "lenovo"              # ← .18 固定为 acer
+  ip: "192.168.0.143"      # ← .18 的固定IP
+  role: "trainer"      # acer 是聚合主机
 
 # ============ 模型配置（统一） ============
 model:
@@ -31,5 +31,5 @@ train:
 
 # ============ 数据配置（按节点分工） ============
 data:
-  source: "risk"          # acer 专注风控数据
-  db_url: "postgresql://user:pass@192.168.1.10:5432/trading"
+  source: "tech"          # acer 专注风控数据
+  db_url: "postgresql://postgres:newpassword123@192.168.0.18:5432/quantforce"
