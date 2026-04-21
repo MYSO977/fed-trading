@@ -153,14 +153,14 @@ def place_order(signal: dict, sizing: dict, conn, dry_run: bool = True) -> dict:
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO executions
-                (execution_id, symbol, action, quantity, fill_price,
-                 stop_loss, take_profit, confidence, status, created_at)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW())
+                (symbol, action, qty, fill_price, confidence, meta)
+                VALUES (%s,%s,%s,%s,%s,%s)
             """, (
-                order["execution_id"], order["symbol"], order["action"],
+                order["symbol"], order["action"],
                 order["quantity"], order["entry_price"],
-                order["stop_loss"], order["take_profit"],
-                order["confidence"], order["status"]
+                order["confidence"],
+                json.dumps({"sl": order["stop_loss"], "tp": order["take_profit"],
+                            "dry_run": dry_run, "reason": order["reason"]})
             ))
         conn.commit()
         log.info(f"{'[DRY]' if dry_run else '[LIVE]'} {order['action']} {order['symbol']} "
